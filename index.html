@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0c0e" media="(prefers-color-scheme: dark)">
+<title>Japan Phrases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbfc; --panel:#ffffff; --card:#ffffff;
+    --ink:#0d0e10; --muted:#8a8f98; --faint:#b4b8bf;
+    --line:#e8e8ea; --line-soft:#f0f0f2;
+    --accent:#5e6ad2; --accent-soft:rgba(94,106,210,.10);
+    --romaji:#5a5f68; --jp:#a4a8b0;
+    --shadow:0 1px 2px rgba(13,14,16,.04),0 1px 3px rgba(13,14,16,.03);
+    --header-bg:rgba(251,251,252,.82);
+  }
+  html[data-theme="dark"]{
+    --bg:#0b0c0e; --panel:#141518; --card:#141518;
+    --ink:#f7f8f8; --muted:#8a8f98; --faint:#5c6069;
+    --line:#23252a; --line-soft:#1b1d21;
+    --accent:#7e88e0; --accent-soft:rgba(126,136,224,.14);
+    --romaji:#c4c8d0; --jp:#6b7078;
+    --shadow:none;
+    --header-bg:rgba(11,12,14,.80);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--ink);
+    -webkit-font-smoothing:antialiased; letter-spacing:-.01em;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  header{
+    position:sticky; top:0; z-index:20;
+    background:var(--header-bg); backdrop-filter:saturate(180%) blur(12px);
+    -webkit-backdrop-filter:saturate(180%) blur(12px);
+    border-bottom:1px solid var(--line);
+    padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+  }
+  .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:16px;letter-spacing:-.02em;}
+  .glyph{
+    width:26px;height:26px;border-radius:7px;
+    background:linear-gradient(135deg,var(--accent),#8b93e6);
+    display:inline-flex;align-items:center;justify-content:center;
+    color:#fff;font-size:13px;font-weight:600;
+  }
+  .theme-btn{
+    width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
+    background:var(--panel);color:var(--muted);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .theme-btn:active{transform:scale(.94);}
+  .theme-btn svg{width:17px;height:17px;}
+  .sun{display:none;} html[data-theme="dark"] .sun{display:block;}
+  html[data-theme="dark"] .moon{display:none;}
+  .search-wrap{position:relative;}
+  .search-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none;}
+  .search-ico svg{width:16px;height:16px;display:block;}
+  #search{
+    width:100%; border:1px solid var(--line); border-radius:10px;
+    padding:11px 38px 11px 36px; font-size:16px; font-family:inherit;
+    background:var(--panel); color:var(--ink); outline:none; letter-spacing:-.01em;
+    transition:border-color .12s,box-shadow .12s;
+  }
+  #search::placeholder{color:var(--faint);}
+  #search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    border:none;background:var(--line);color:var(--muted);width:22px;height:22px;border-radius:6px;
+    font-size:14px;display:none;align-items:center;justify-content:center;cursor:pointer;line-height:1;}
+  .clear.show{display:flex;}
+  .tabs{
+    display:flex; gap:6px; overflow-x:auto; padding:10px 16px 4px;
+    position:sticky; top:0; z-index:10; background:var(--bg);
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto; border:1px solid var(--line); background:var(--panel); color:var(--muted);
+    padding:6px 13px; border-radius:8px; font-size:13px; font-weight:500; font-family:inherit;
+    cursor:pointer; white-space:nowrap; letter-spacing:-.01em;
+    transition:all .12s;
+  }
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  main{padding:6px 12px 40px;}
+  .cat-head{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--faint);margin:20px 8px 8px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:14px 14px 13px; margin-bottom:8px; display:flex; gap:12px; align-items:flex-start;
+    box-shadow:var(--shadow); transition:border-color .12s;
+  }
+  .card:active{border-color:var(--faint);}
+  .card .body{flex:1;min-width:0;}
+  .en{font-size:16px;font-weight:600;line-height:1.3;margin-bottom:5px;letter-spacing:-.015em;}
+  .phon{font-size:13.5px;color:var(--accent);font-weight:600;margin-bottom:2px;}
+  .romaji{font-size:13.5px;color:var(--romaji);font-style:italic;margin-bottom:6px;}
+  .jp{font-size:12.5px;color:var(--jp);font-weight:500;}
+  .speak{
+    flex:0 0 auto; width:40px;height:40px;border-radius:10px;
+    border:1px solid var(--line); background:var(--panel); color:var(--accent);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;
+  }
+  .speak:active{transform:scale(.90);}
+  .speak svg{width:19px;height:19px;}
+  .speak.playing{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .empty{text-align:center;color:var(--muted);padding:56px 20px;font-size:14px;line-height:1.6;}
+  .count{text-align:center;color:var(--faint);font-size:12px;padding:10px 0 24px;}
+  .foot{text-align:center;color:var(--faint);font-size:12px;padding:4px 20px 28px;line-height:1.6;}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand"><span class="glyph">あ</span> Japan Phrases</div>
+    <button class="theme-btn" id="theme" aria-label="Toggle theme">
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+    <input id="search" type="search" inputmode="search" autocomplete="off" placeholder="Search e.g. bag, water, sorry…">
+    <button class="clear" id="clear" aria-label="Clear">&times;</button>
+  </div>
+</header>
+<nav class="tabs" id="tabs"></nav>
+<main id="main"></main>
+<div class="foot">Tap the speaker to hear it in Japanese. All phrases use polite (です／ます) form — safe for any stranger, shop, or staff.</div>
+
+<script>
+const PHRASES = [
+  // ESSENTIALS
+  {c:"Essentials", en:"Yes", phon:"HIGH", r:"hai", j:"はい"},
+  {c:"Essentials", en:"No", phon:"ee-EH", r:"iie", j:"いいえ"},
+  {c:"Essentials", en:"Thank you", phon:"ah-ree-GAH-toh goh-zigh-mahss", r:"arigatō gozaimasu", j:"ありがとうございます"},
+  {c:"Essentials", en:"Thank you very much", phon:"doh-moh ah-ree-GAH-toh goh-zigh-mahss", r:"dōmo arigatō gozaimasu", j:"どうもありがとうございます"},
+  {c:"Essentials", en:"Please (offering / asking a favor)", phon:"oh-neh-guy shee-MAHSS", r:"onegai shimasu", j:"お願いします"},
+  {c:"Essentials", en:"Please (go ahead / here you are)", phon:"DOH-zoh", r:"dōzo", j:"どうぞ"},
+  {c:"Essentials", en:"Excuse me / Sorry (to get attention)", phon:"soo-mee-mah-SEN", r:"sumimasen", j:"すみません"},
+  {c:"Essentials", en:"I'm sorry", phon:"goh-men-nah-SIGH", r:"gomen nasai", j:"ごめんなさい"},
+  {c:"Essentials", en:"You're welcome", phon:"doh ee-tah-shee-MAH-shteh", r:"dō itashimashite", j:"どういたしまして"},
+  {c:"Essentials", en:"OK / I understand", phon:"wah-kah-ree-MAH-shta", r:"wakarimashita", j:"わかりました"},
+  {c:"Essentials", en:"I don't understand", phon:"wah-kah-ree-mah-SEN", r:"wakarimasen", j:"わかりません"},
+  {c:"Essentials", en:"Do you speak English?", phon:"AY-goh oh hah-nah-seh-MAHSS kah", r:"eigo o hanasemasu ka", j:"英語を話せますか"},
+  {c:"Essentials", en:"I don't speak Japanese", phon:"nee-hon-goh gah hah-nah-seh-mah-SEN", r:"nihongo ga hanasemasen", j:"日本語が話せません"},
+  {c:"Essentials", en:"Please say it again", phon:"moh ee-chee-doh oh-neh-guy shee-MAHSS", r:"mō ichido onegai shimasu", j:"もう一度お願いします"},
+  {c:"Essentials", en:"Please speak slowly", phon:"yook-KOO-ree hah-nah-shteh koo-dah-sigh", r:"yukkuri hanashite kudasai", j:"ゆっくり話してください"},
+
+  // GREETINGS
+  {c:"Greetings", en:"Good morning", phon:"oh-hah-yoh goh-zigh-MAHSS", r:"ohayō gozaimasu", j:"おはようございます"},
+  {c:"Greetings", en:"Hello / Good afternoon", phon:"kohn-nee-chee-WAH", r:"konnichiwa", j:"こんにちは"},
+  {c:"Greetings", en:"Good evening", phon:"kohn-bahn-WAH", r:"konbanwa", j:"こんばんは"},
+  {c:"Greetings", en:"Goodbye", phon:"sah-yoh-NAH-rah", r:"sayōnara", j:"さようなら"},
+  {c:"Greetings", en:"See you / Bye (casual)", phon:"JAH mah-tah", r:"ja mata", j:"じゃあまた"},
+  {c:"Greetings", en:"Nice to meet you", phon:"hah-jee-meh-MAH-shteh", r:"hajimemashite", j:"はじめまして"},
+  {c:"Greetings", en:"How are you?", phon:"oh-GEN-kee dess kah", r:"ogenki desu ka", j:"お元気ですか"},
+  {c:"Greetings", en:"I'm fine, thank you", phon:"GEN-kee dess", r:"genki desu", j:"元気です"},
+  {c:"Greetings", en:"Good night", phon:"oh-yah-soo-mee-nah-SIGH", r:"oyasuminasai", j:"おやすみなさい"},
+
+  // RESTAURANT & FOOD
+  {c:"Food & Dining", en:"A table for two, please", phon:"foo-tah-ree dess", r:"futari desu", j:"二人です"},
+  {c:"Food & Dining", en:"Menu, please", phon:"MEN-yoo oh-neh-guy shee-MAHSS", r:"menyū onegai shimasu", j:"メニューお願いします"},
+  {c:"Food & Dining", en:"An English menu?", phon:"AY-goh no MEN-yoo ah-ree-MAHSS kah", r:"eigo no menyū arimasu ka", j:"英語のメニューありますか"},
+  {c:"Food & Dining", en:"I'll have this one", phon:"koh-reh oh koo-dah-SIGH", r:"kore o kudasai", j:"これをください"},
+  {c:"Food & Dining", en:"What do you recommend?", phon:"oh-soo-soo-meh wah NAHN dess kah", r:"osusume wa nan desu ka", j:"おすすめは何ですか"},
+  {c:"Food & Dining", en:"Water, please", phon:"oh-MEE-zoo oh-neh-guy shee-MAHSS", r:"omizu onegai shimasu", j:"お水お願いします"},
+  {c:"Food & Dining", en:"One beer, please", phon:"BEE-roo eek-koh oh-neh-guy shee-MAHSS", r:"bīru ikko onegai shimasu", j:"ビール一個お願いします"},
+  {c:"Food & Dining", en:"Is this vegetarian?", phon:"koh-reh wah beh-jee-tah-ree-ahn dess kah", r:"kore wa bejitarian desu ka", j:"これはベジタリアンですか"},
+  {c:"Food & Dining", en:"I have a food allergy", phon:"ah-reh-roo-GEE gah ah-ree-MAHSS", r:"arerugī ga arimasu", j:"アレルギーがあります"},
+  {c:"Food & Dining", en:"No wasabi, please", phon:"wah-sah-bee NAH-shee de oh-neh-guy shee-MAHSS", r:"wasabi nashi de onegai shimasu", j:"わさび抜きでお願いします"},
+  {c:"Food & Dining", en:"It's delicious!", phon:"oh-ee-SHEE dess", r:"oishii desu", j:"おいしいです"},
+  {c:"Food & Dining", en:"Thanks for the meal (after eating)", phon:"goh-chee-soh-sah-mah DESH-ta", r:"gochisōsama deshita", j:"ごちそうさまでした"},
+  {c:"Food & Dining", en:"Check, please", phon:"oh-kigh-KEH oh-neh-guy shee-MAHSS", r:"okaikei onegai shimasu", j:"お会計お願いします"},
+  {c:"Food & Dining", en:"Can I pay by card?", phon:"KAH-doh de hah-rah-eh-MAHSS kah", r:"kādo de haraemasu ka", j:"カードで払えますか"},
+
+  // SHOPPING
+  {c:"Shopping", en:"How much is this?", phon:"koh-reh wah EE-koo-rah dess kah", r:"kore wa ikura desu ka", j:"これはいくらですか"},
+  {c:"Shopping", en:"May I have a bag?", phon:"FOO-koo-roh oh moh-rah-eh-MAHSS kah", r:"fukuro o moraemasu ka", j:"袋をもらえますか"},
+  {c:"Shopping", en:"I don't need a bag", phon:"FOO-koo-roh wah ee-ree-mah-SEN", r:"fukuro wa irimasen", j:"袋はいりません"},
+  {c:"Shopping", en:"Can I try this on?", phon:"shee-CHAKK shteh moh EE dess kah", r:"shichaku shite mo ii desu ka", j:"試着してもいいですか"},
+  {c:"Shopping", en:"Do you have a bigger size?", phon:"moh-tto oh-kee SIGH-zoo ah-ree-MAHSS kah", r:"motto ōkii saizu arimasu ka", j:"もっと大きいサイズありますか"},
+  {c:"Shopping", en:"I'm just looking", phon:"MEE-teh roo dah-keh dess", r:"miteru dake desu", j:"見てるだけです"},
+  {c:"Shopping", en:"I'll take it", phon:"koh-reh oh koo-dah-SIGH", r:"kore o kudasai", j:"これをください"},
+  {c:"Shopping", en:"Do you take tax-free?", phon:"MEN-zay dess kah", r:"menzei desu ka", j:"免税ですか"},
+  {c:"Shopping", en:"Can I pay with this? (holding card/phone)", phon:"koh-reh de hah-rah-eh-MAHSS kah", r:"kore de haraemasu ka", j:"これで払えますか"},
+
+  // DIRECTIONS
+  {c:"Directions", en:"Where is the toilet?", phon:"toh-EE-reh wah DOH-koh dess kah", r:"toire wa doko desu ka", j:"トイレはどこですか"},
+  {c:"Directions", en:"Where is the station?", phon:"EH-kee wah DOH-koh dess kah", r:"eki wa doko desu ka", j:"駅はどこですか"},
+  {c:"Directions", en:"Where is this? (showing a map)", phon:"koh-koh wah DOH-koh dess kah", r:"koko wa doko desu ka", j:"ここはどこですか"},
+  {c:"Directions", en:"How do I get to ___ ?", phon:"___ mah-deh doh yah-tteh ee-kee-MAHSS kah", r:"___ made dō yatte ikimasu ka", j:"___まで どうやって行きますか"},
+  {c:"Directions", en:"Is it far?", phon:"toh-OY dess kah", r:"tōi desu ka", j:"遠いですか"},
+  {c:"Directions", en:"Left", phon:"hee-dah-REE", r:"hidari", j:"左"},
+  {c:"Directions", en:"Right", phon:"mee-GHEE", r:"migi", j:"右"},
+  {c:"Directions", en:"Straight ahead", phon:"mah-SOO-goo", r:"massugu", j:"まっすぐ"},
+  {c:"Directions", en:"Can you show me on the map?", phon:"CHEE-zoo de oh-shee-eh-teh koo-dah-sigh", r:"chizu de oshiete kudasai", j:"地図で教えてください"},
+
+  // TRANSPORT
+  {c:"Transport", en:"One ticket to ___ , please", phon:"___ mah-deh ee-chee-migh oh-neh-guy shee-MAHSS", r:"___ made ichimai onegai shimasu", j:"___まで一枚お願いします"},
+  {c:"Transport", en:"Which platform?", phon:"NAHN-bahn SEN dess kah", r:"nanban sen desu ka", j:"何番線ですか"},
+  {c:"Transport", en:"Does this train go to ___ ?", phon:"koh-noh DEN-shah wah ___ nee ee-kee-MAHSS kah", r:"kono densha wa ___ ni ikimasu ka", j:"この電車は___に行きますか"},
+  {c:"Transport", en:"Please take me to this address (taxi)", phon:"koh-noh joo-shoh mah-deh oh-neh-guy shee-MAHSS", r:"kono jūsho made onegai shimasu", j:"この住所までお願いします"},
+  {c:"Transport", en:"Please stop here", phon:"koh-koh de toh-meh-teh koo-dah-SIGH", r:"koko de tomete kudasai", j:"ここで止めてください"},
+  {c:"Transport", en:"What time is the last train?", phon:"shoo-DEN wah NAHN-jee dess kah", r:"shūden wa nanji desu ka", j:"終電は何時ですか"},
+
+  // HOTEL
+  {c:"Hotel", en:"I have a reservation", phon:"yoh-yah-KOO shteh ah-ree-MAHSS", r:"yoyaku shite arimasu", j:"予約してあります"},
+  {c:"Hotel", en:"Check-in, please", phon:"CHEK-koo-een oh-neh-guy shee-MAHSS", r:"chekku-in onegai shimasu", j:"チェックインお願いします"},
+  {c:"Hotel", en:"What time is check-out?", phon:"CHEK-koo-ow-toh wah NAHN-jee dess kah", r:"chekku-auto wa nanji desu ka", j:"チェックアウトは何時ですか"},
+  {c:"Hotel", en:"Can I leave my luggage here?", phon:"nee-MOH-tsoo oh ah-zoo-keh-MAHSS kah", r:"nimotsu o azukemasu ka", j:"荷物を預けますか"},
+  {c:"Hotel", en:"Is there Wi-Fi?", phon:"WHY-figh ah-ree-MAHSS kah", r:"wai-fai arimasu ka", j:"Wi-Fiありますか"},
+
+  // EMERGENCY & HEALTH
+  {c:"Emergency", en:"Help!", phon:"tah-soo-KEH-teh", r:"tasukete", j:"助けて"},
+  {c:"Emergency", en:"Please call the police", phon:"KAY-sah-tsoo oh yon-de koo-dah-sigh", r:"keisatsu o yonde kudasai", j:"警察を呼んでください"},
+  {c:"Emergency", en:"Please call an ambulance", phon:"kyoo-kyoo-shah oh yon-de koo-dah-sigh", r:"kyūkyūsha o yonde kudasai", j:"救急車を呼んでください"},
+  {c:"Emergency", en:"I feel sick / unwell", phon:"kee-bun gah wah-ROO-ee dess", r:"kibun ga warui desu", j:"気分が悪いです"},
+  {c:"Emergency", en:"Where is a hospital?", phon:"byoh-EEN wah DOH-koh dess kah", r:"byōin wa doko desu ka", j:"病院はどこですか"},
+  {c:"Emergency", en:"Where is a pharmacy?", phon:"yah-KOO-kyoh-koo wah DOH-koh dess kah", r:"yakkyoku wa doko desu ka", j:"薬局はどこですか"},
+  {c:"Emergency", en:"I lost my passport", phon:"pahss-POH-toh oh nah-koo-shee-MAH-shta", r:"pasupōto o nakushimashita", j:"パスポートをなくしました"},
+  {c:"Emergency", en:"Is there someone who speaks English?", phon:"AY-goh gah dess-KEE-roo hito ee-MAHSS kah", r:"eigo ga dekiru hito imasu ka", j:"英語ができる人いますか"},
+
+  // NUMBERS & USEFUL WORDS
+  {c:"Numbers & Words", en:"One", phon:"ee-CHEE", r:"ichi", j:"一"},
+  {c:"Numbers & Words", en:"Two", phon:"NEE", r:"ni", j:"二"},
+  {c:"Numbers & Words", en:"Three", phon:"SAHN", r:"san", j:"三"},
+  {c:"Numbers & Words", en:"Four", phon:"YOHN", r:"yon", j:"四"},
+  {c:"Numbers & Words", en:"Five", phon:"GOH", r:"go", j:"五"},
+  {c:"Numbers & Words", en:"Six", phon:"roh-KOO", r:"roku", j:"六"},
+  {c:"Numbers & Words", en:"Seven", phon:"nah-NAH", r:"nana", j:"七"},
+  {c:"Numbers & Words", en:"Eight", phon:"hah-CHEE", r:"hachi", j:"八"},
+  {c:"Numbers & Words", en:"Nine", phon:"KYOO", r:"kyū", j:"九"},
+  {c:"Numbers & Words", en:"Ten", phon:"JOO", r:"jū", j:"十"},
+  {c:"Numbers & Words", en:"100", phon:"HYAH-koo", r:"hyaku", j:"百"},
+  {c:"Numbers & Words", en:"1,000", phon:"SEN", r:"sen", j:"千"},
+  {c:"Numbers & Words", en:"This", phon:"koh-REH", r:"kore", j:"これ"},
+  {c:"Numbers & Words", en:"That", phon:"soh-REH", r:"sore", j:"それ"},
+  {c:"Numbers & Words", en:"How much?", phon:"EE-koo-rah", r:"ikura", j:"いくら"},
+  {c:"Numbers & Words", en:"Where?", phon:"DOH-koh", r:"doko", j:"どこ"},
+  {c:"Numbers & Words", en:"OK / good", phon:"DIGH-joh-boo", r:"daijōbu", j:"大丈夫"},
+  {c:"Numbers & Words", en:"A little", phon:"soo-KOH-shee", r:"sukoshi", j:"少し"}
+];
+
+const CATS = ["All", ...PHRASES.reduce((a,p)=>a.includes(p.c)?a:[...a,p.c],[])];
+let activeCat = "All";
+let query = "";
+
+// ---- Theme ----
+const themeBtn = document.getElementById("theme");
+function saved(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+function store(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+(function initTheme(){
+  const s = saved("theme");
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const theme = s || (prefersDark ? "dark" : "light");
+  document.documentElement.setAttribute("data-theme", theme);
+})();
+themeBtn.onclick = ()=>{
+  const cur = document.documentElement.getAttribute("data-theme");
+  const next = cur === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  store("theme", next);
+};
+
+// ---- Speech ----
+let voice = null;
+function pickVoice(){
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v=>v.lang==="ja-JP") || vs.find(v=>v.lang&&v.lang.startsWith("ja")) || null;
+}
+if("speechSynthesis" in window){
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+let curBtn = null;
+function speak(text, btn){
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  if(curBtn){curBtn.classList.remove("playing");}
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ja-JP";
+  if(voice) u.voice = voice;
+  u.rate = 0.85;
+  btn.classList.add("playing"); curBtn = btn;
+  u.onend = ()=>btn.classList.remove("playing");
+  u.onerror = ()=>btn.classList.remove("playing");
+  speechSynthesis.speak(u);
+}
+
+// ---- Render ----
+const tabsEl = document.getElementById("tabs");
+const mainEl = document.getElementById("main");
+const searchEl = document.getElementById("search");
+const clearEl = document.getElementById("clear");
+
+const spkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
+
+function renderTabs(){
+  tabsEl.innerHTML = "";
+  CATS.forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "chip"+(c===activeCat?" active":"");
+    b.textContent = c;
+    b.onclick = ()=>{activeCat=c; query=""; searchEl.value=""; clearEl.classList.remove("show"); renderTabs(); render(); window.scrollTo(0,0);};
+    tabsEl.appendChild(b);
+  });
+}
+
+function norm(s){return s.toLowerCase();}
+function match(p){
+  if(!query) return activeCat==="All"||p.c===activeCat;
+  const q = norm(query);
+  const hit = norm(p.en).includes(q)||norm(p.r).includes(q)||norm(p.phon).includes(q)||p.j.includes(query)||norm(p.c).includes(q);
+  return hit;
+}
+
+function card(p){
+  const d = document.createElement("div");
+  d.className = "card";
+  d.innerHTML =
+    '<div class="body">'+
+      '<div class="en"></div>'+
+      '<div class="phon"></div>'+
+      '<div class="romaji"></div>'+
+      '<div class="jp"></div>'+
+    '</div>'+
+    '<button class="speak" aria-label="Play pronunciation">'+spkIcon+'</button>';
+  d.querySelector(".en").textContent = p.en;
+  d.querySelector(".phon").textContent = p.phon;
+  d.querySelector(".romaji").textContent = p.r;
+  d.querySelector(".jp").textContent = p.j;
+  d.querySelector(".speak").onclick = function(){ speak(p.j, this); };
+  return d;
+}
+
+function render(){
+  const list = PHRASES.filter(match);
+  mainEl.innerHTML = "";
+  if(list.length===0){
+    mainEl.innerHTML = '<div class="empty">No phrases found.<br>Try another word.</div>';
+    return;
+  }
+  if(query){
+    list.forEach(p=>mainEl.appendChild(card(p)));
+  } else {
+    let last = null;
+    list.forEach(p=>{
+      if(p.c!==last){
+        const h=document.createElement("div");
+        h.className="cat-head"; h.textContent=p.c;
+        mainEl.appendChild(h); last=p.c;
+      }
+      mainEl.appendChild(card(p));
+    });
+  }
+  const c=document.createElement("div");
+  c.className="count"; c.textContent=list.length+" phrase"+(list.length>1?"s":"");
+  mainEl.appendChild(c);
+}
+
+searchEl.addEventListener("input",e=>{
+  query = e.target.value.trim();
+  clearEl.classList.toggle("show", query.length>0);
+  render();
+});
+clearEl.onclick=()=>{query="";searchEl.value="";clearEl.classList.remove("show");render();searchEl.focus();};
+
+renderTabs();
+render();
+</script>
+</body>
+</html>
